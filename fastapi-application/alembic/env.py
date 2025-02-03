@@ -1,5 +1,9 @@
 import asyncio
+import base64
 from logging.config import fileConfig
+
+from core.config import settings
+from core.models import Base
 
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
@@ -20,12 +24,13 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = None
+target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
+config.set_main_option("sqlalchemy.url", str(settings.db.url))
 
 
 def run_migrations_offline() -> None:
