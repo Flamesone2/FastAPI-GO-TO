@@ -8,6 +8,7 @@ from sqlalchemy.orm import DeclarativeBase
 
 from core.models import Base
 from core.models.mixins.int_id_pk import IntIdPkMixin
+from core.types.user_id import UserId_type
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,7 +17,7 @@ if TYPE_CHECKING:
 class User(
     Base,
     IntIdPkMixin,
-    SQLAlchemyBaseUserTable[int],
+    SQLAlchemyBaseUserTable[UserId_type],
 ):
     @classmethod
     def get_db(cls, session: "AsyncSession"):
