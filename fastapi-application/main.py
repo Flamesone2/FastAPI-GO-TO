@@ -1,23 +1,16 @@
-from contextlib import asynccontextmanager
-
 import uvicorn
 from fastapi import FastAPI
 from api import router as api_router
 from core.config import settings
 from core.models import db_helper
+from fastapi.responses import ORJSONResponse
+from create_fastapi_app import create_app
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # startup
-    yield
-    # shutdown
-    print(f"{settings.db.url}")
-    print("dispose engine")
-    await db_helper.dispose()
+main_app = create_app(
+    create_custom_static_urls=True,
+)
 
-
-main_app = FastAPI(lifespan=lifespan)
 main_app.include_router(
     api_router,
     prefix=settings.api.prefix,
