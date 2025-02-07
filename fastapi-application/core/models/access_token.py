@@ -9,7 +9,7 @@ from sqlalchemy import ForeignKey, Integer
 from sqlalchemy.orm import mapped_column, Mapped
 
 from core.models import Base
-from core.types.user_id import UserId_type
+from core.types.user_id import UserIdType
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,9 +17,9 @@ if TYPE_CHECKING:
 
 class AccessToken(
     Base,
-    SQLAlchemyBaseAccessTokenTable[UserId_type],
+    SQLAlchemyBaseAccessTokenTable[UserIdType],
 ):
-    user_id: Mapped[UserId_type] = mapped_column(
+    user_id: Mapped[UserIdType] = mapped_column(
         Integer,
         ForeignKey("users.id", ondelete="cascade"),
         nullable=False,
