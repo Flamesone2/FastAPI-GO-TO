@@ -11,11 +11,12 @@ class RunConfig(BaseModel):
 class ApiV1Prefix(BaseModel):
     prefix: str = "/v1"
     users: str = "/users"
-
+    auth: str = "/auth"
 
 class ApiPrefix(BaseModel):
     prefix: str = "/api"
     v1: ApiV1Prefix = ApiV1Prefix()
+
 
 class AccessToken(BaseModel):
     lifetime_seconds: int = 3600
