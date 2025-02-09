@@ -1,6 +1,8 @@
+import logging
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import BaseModel, PostgresDsn
-from typing import Dict
+from typing import Dict, Literal
 
 
 class RunConfig(BaseModel):
@@ -10,22 +12,22 @@ class RunConfig(BaseModel):
 
 class ApiV1Prefix(BaseModel):
     prefix: str = "/v1"
-    users: str = "/users"
     auth: str = "/auth"
+    users: str = "/users"
 
 class ApiPrefix(BaseModel):
     prefix: str = "/api"
     v1: ApiV1Prefix = ApiV1Prefix()
+
     @property
     def bearer_token_url(self) -> str:
-        # /api/v1/auth/login
+        # api/v1/auth/login
         parts = (self.prefix, self.v1.prefix, self.v1.auth, "/login")
         path = "".join(parts)
+        # return path[1:]
         return path.removeprefix("/")
-class AccessToken(BaseModel):
-    lifetime_seconds: int = 3600
-    reset_password_token_secret: str
-    verification_token_secret: str
+
+
 
 class DatabaseConfig(BaseModel):
     url: PostgresDsn
@@ -41,6 +43,31 @@ class DatabaseConfig(BaseModel):
         "pk": "pk_%(table_name)s",
     }
 
+class AccessToken(BaseModel):
+    lifetime_seconds: int = 3600
+    reset_password_token_secret: str
+    verification_token_secret: str
+
+LOG_DEFAULT_FORMAT = (
+    "[%(asctime)s.%(msecs)03d] %(module)10s:%(lineno)-3d %(levelname)-7s - %(message)s"
+)
+
+
+class LoggingConfig(BaseModel):
+    log_level: Literal[
+        "debug",
+        "info",
+        "warning",
+        "error",
+        "critical",
+    ] = "info"
+    log_format: str = LOG_DEFAULT_FORMAT
+
+    @property
+    def log_level_value(self) -> int:
+        return logging.getLevelNamesMapping()[self.log_level.upper()]
+
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -50,6 +77,7 @@ class Settings(BaseSettings):
         env_prefix="APP_CONFIG__",
     )
     run: RunConfig = RunConfig()
+    logging: LoggingConfig = LoggingConfig()
     api: ApiPrefix = ApiPrefix()
     db: DatabaseConfig
     access_token: AccessToken
