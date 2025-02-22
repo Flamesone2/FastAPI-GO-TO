@@ -1,12 +1,13 @@
+import logging
+
 import uvicorn
-from fastapi import FastAPI
 from api import router as api_router
 from core.config import settings
-from core.models import db_helper
-from fastapi.responses import ORJSONResponse
 from create_fastapi_app import create_app
 
-
+logging.basicConfig(
+    format=settings.logging.log_format,
+)
 main_app = create_app(
     create_custom_static_urls=True,
 )
@@ -18,7 +19,7 @@ main_app.include_router(
 if __name__ == "__main__":
     uvicorn.run(
         "main:main_app",
-        host=settings.run.host,
-        port=settings.run.port,
+        host=run.host,
+        port=run.port,
         reload=True,
     )
